@@ -1,0 +1,7 @@
+{
+  "name": "OmniTicket Enterprise",
+  "description": "A robust, multi-role ticketing system featuring dynamic routing, SLA monitoring, and automated ID generation for enterprise operations.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
