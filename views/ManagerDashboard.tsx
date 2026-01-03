@@ -10,9 +10,11 @@ interface ManagerDashboardProps {
 }
 
 export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ currentUser, tickets }) => {
-  const managers = USERS.filter(u => u.role === 'Manager' && u.id.startsWith('m_'));
+  // Use 'Regional' instead of 'Manager' as it's the correct UserRole defined in types.ts
+  const managers = USERS.filter(u => u.role === 'Regional' && u.id.startsWith('rl_'));
   const [selectedManagerId, setSelectedManagerId] = useState<string>(
-    currentUser.id.startsWith('m_') ? currentUser.id : managers[0].id
+    // Check for 'rl_' prefix and ensure managers[0] exists to avoid runtime errors
+    currentUser.id.startsWith('rl_') ? currentUser.id : (managers[0]?.id || 'all')
   );
 
   const teamAMs = USERS.filter(u => u.role === 'AM' && u.managerId === selectedManagerId);

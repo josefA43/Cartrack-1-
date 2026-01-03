@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Layout } from './components/Layout';
-import { User, Ticket, TicketStage } from './types';
+import { User, Ticket, TicketStage, UserRole } from './types';
 import { USERS, INITIAL_TICKETS } from './constants';
 import { ClientPortal } from './views/ClientPortal';
 import { AMDashboard } from './views/AMDashboard';
-import { ManagerDashboard } from './views/ManagerDashboard';
+import { RegionalDashboard } from './views/RegionalDashboard';
+import { ExecutiveDashboard } from './views/ExecutiveDashboard';
 import { calculateSLAStatus } from './services/ticketService';
 
 const App: React.FC = () => {
@@ -14,44 +15,32 @@ const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>(USERS);
   const [notifications, setNotifications] = useState<string[]>([]);
   
-  // Track known breaches to avoid duplicate log triggers
   const knownBreaches = useRef<Set<string>>(new Set());
 
-  // Background SLA Monitoring Job (Simulated Cron)
   useEffect(() => {
     const runSLACheck = () => {
-      console.log("[SLA Job] Scanning system for breaches...");
-      
       const currentBreaches = tickets.filter(t => calculateSLAStatus(t) === 'Breach');
-      
       currentBreaches.forEach(ticket => {
         if (!knownBreaches.current.has(ticket.id)) {
-          // New breach detected!
-          const msg = `SLA BREACH: Ticket ${ticket.id} has not been updated in 24h. Notifications sent to Manager and AM.`;
-          console.warn(`[EMAIL TRIGGER] To: manager@omniticket.com, AM-${ticket.assignedAMId}. Subject: ${msg}`);
-          
+          const msg = `ALERT: Ticket ${ticket.id} SLA Breach. Escalated to Management.`;
           setNotifications(prev => [...prev, msg]);
           knownBreaches.current.add(ticket.id);
         }
       });
     };
-
-    // Initial check
     runSLACheck();
-
-    // Set interval for automated checking
-    const interval = setInterval(runSLACheck, 30000);
+    const interval = setInterval(runSLACheck, 60000);
     return () => clearInterval(interval);
   }, [tickets]);
 
-  const handleRoleChange = (role: 'Client' | 'AM' | 'Manager') => {
-    let newUser: User;
-    if (role === 'Client') newUser = users.find(u => u.role === 'Client')!;
-    else if (role === 'AM') newUser = users.find(u => u.role === 'AM')!;
-    else {
-      newUser = users.find(u => u.id === 'm_jasonw') || users.find(u => u.role === 'Manager')!;
+  const handleRoleChange = (role: UserRole) => {
+    let newUser = users.find(u => u.role === role);
+    if (!newUser) {
+      if (role === 'Regional') newUser = users.find(u => u.id === 'rl_jason');
+      else if (role === 'Director') newUser = users.find(u => u.role === 'Director');
+      else if (role === 'National') newUser = users.find(u => u.role === 'National');
     }
-    setCurrentUser(newUser);
+    if (newUser) setCurrentUser(newUser);
   };
 
   const addTicket = (ticket: Ticket) => {
@@ -63,17 +52,12 @@ const App: React.FC = () => {
       t.id === id ? { ...t, stage, lastUpdated: new Date().toISOString() } : t
     ));
     knownBreaches.current.delete(id);
-    setNotifications(prev => prev.filter(n => !n.includes(id)));
   };
 
   const toggleAMStatus = (backupId?: string) => {
     const updatedUsers = users.map(u => {
       if (u.id === currentUser.id) {
-        return { 
-          ...u, 
-          isOoO: !u.isOoO,
-          backupAMId: backupId || u.backupAMId 
-        };
+        return { ...u, isOoO: !u.isOoO, backupAMId: backupId || u.backupAMId };
       }
       return u;
     });
@@ -87,7 +71,7 @@ const App: React.FC = () => {
     <Layout 
       user={currentUser} 
       notificationCount={activeBreachCount}
-      onLogout={() => alert('Signed Out')} 
+      onLogout={() => alert('Logged Out')} 
       onRoleChange={handleRoleChange}
       onClearNotifications={() => setNotifications([])}
     >
@@ -102,8 +86,11 @@ const App: React.FC = () => {
           onToggleStatus={toggleAMStatus}
         />
       )}
-      {currentUser.role === 'Manager' && (
-        <ManagerDashboard currentUser={currentUser} tickets={tickets} />
+      {currentUser.role === 'Regional' && (
+        <RegionalDashboard currentUser={currentUser} tickets={tickets} />
+      )}
+      {(currentUser.role === 'National' || currentUser.role === 'Director') && (
+        <ExecutiveDashboard role={currentUser.role} tickets={tickets} />
       )}
     </Layout>
   );

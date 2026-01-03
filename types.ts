@@ -18,23 +18,25 @@ export type TicketStage =
   | 'Company Hold' 
   | 'Completed';
 
+export type UserRole = 'Client' | 'AM' | 'Regional' | 'National' | 'Director';
+
 export interface User {
   id: string;
   username: string;
-  role: 'Client' | 'AM' | 'Manager';
+  role: UserRole;
   company?: string;
   email: string;
   isOoO?: boolean;
   backupAMId?: string;
-  assignedAMId?: string; // For Clients: Links them to a specific AM
-  managerId?: string; // ID of the manager this AM reports to
+  assignedAMId?: string; 
+  managerId?: string; 
   workload?: number;
 }
 
 export interface Ticket {
-  id: string; // Username_Type_Sequential
+  id: string;
   month: string;
-  dateSent: string; // ISO String
+  dateSent: string;
   username: string;
   company: string;
   contactEmail: string;
@@ -45,7 +47,7 @@ export interface Ticket {
   scheduleDate: string;
   assignedAMId: string;
   tcDocUrl: string;
-  lastUpdated: string; // ISO String
+  lastUpdated: string;
 }
 
 export interface SLABreach {

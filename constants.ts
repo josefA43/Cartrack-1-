@@ -1,70 +1,87 @@
 
 import { User, Ticket, TicketStage, TicketType } from './types';
 
-// Managers and Clients
-const JASON_ID = 'm_jasonw';
-const THILOSHINI_ID = 'm_thiloshinin';
-
-const AM_NAMES = [
-  "Alouette Havenga", "Andisiwe Lapi", "Anina Van Rensburg", "Antonio Max-lino", "Arabella de Meillon",
-  "Ashlyne-Kay Caveney", "Bongi Kondleka", "Brandon Spandiel", "Celia Francis", "Chantal Fisher",
-  "Chante Labuschagne", "Charissa Drotskie", "Charles Wagner", "Cindy Ann Burke", "Corne Gunther",
-  "Corne Reichert", "Craig La Vita", "Craig Mallandain", "Darius Bronkhorst", "Desigan Veeran",
-  "Desiree Schwegmann", "Enrico De Giovanni", "Gladys Claassen", "Gustav Lind", "Henrico Bekker",
-  "Henriette Harrison", "Imogen Katsky", "Jade Holl", "Jade Taff", "Jared Hockaday",
-  "Jeremy Beeby", "Johan van Schalkwyk", "Josh Munger", "Juanita Calitz", "Juan-Pere Duvenhage",
-  "Kerusha Bechoo", "Kerwin Manuel", "Keshnee Pillay", "Kim Hing", "Lorne Adams",
-  "Lorraine Slabbert", "Luke Naidoo", "Lungelo Mabena", "Luniko Fitshane", "Madiphoko Moholo",
-  "Magdalena Van Der Lely", "Mandisa Mfeka", "Marcelle Kunneke", "Menziwezinto Mchunu", "Moegamad Abdussamad",
-  "Moeketsi Mogapi", "Moipone Khoele", "Nadia Fivaz", "Nicole Roopen", "Nicole Zwaneopel",
-  "Nina Iwuoha", "Noelene Mthiyane", "Nthabiseng Mashego", "Ntokozo Shaun Nhlapo", "Oratiloe Molefe",
-  "Raigaanah Sarmie", "Regan Jansen", "Riaan Mare", "Rochelle Kapp", "Rose Nhlapo",
-  "Ruan Smith", "Saddica Berriche", "Shayna Bentley", "Sherazade Hatia", "Shivani Tulsia",
-  "Shiveer Ramjith", "Siyabulela Mtatase", "Subhaan Abdulla", "Tamarin Otto", "Thandile Nqwakuzayo",
-  "Troskie Posthumus", "Valencia Pillay", "Vanessa Ferreira", "Vicky Ngomane", "Vumokwakhe Gazu",
-  "Yashik Rambally", "Zandile Thotanyana"
+// Management Layers
+export const REGIONAL_LEADERS = [
+  { id: 'rl_alwyn', name: 'Alwyn Grobler' },
+  { id: 'rl_daniel', name: 'Daniel Jacobs' },
+  { id: 'rl_genen', name: 'Genen Richter' },
+  { id: 'rl_jason', name: 'Jason Witbooi' },
+  { id: 'rl_sherezaad', name: 'Sherezaad Sahabodien' },
+  { id: 'rl_tamzin', name: 'Tamzin Ball' },
+  { id: 'rl_thiloshini', name: 'Thiloshini Naidoo' }
 ];
 
-const JASON_TEAM = [
-  "Arabella de Meillon", "Brandon Spandiel", "Chantal Fisher", "Desiree Schwegmann", 
-  "Enrico De Giovanni", "Moeketsi Mogapi", "Nicole Roopen", "Noelene Mthiyane", 
-  "Raigaanah Sarmie", "Rose Nhlapo", "Saddica Berriche", "Siyabulela Mtatase", "Thandile Red"
-];
+// Map of AMs to their Regional Leaders
+const TEAM_MAP: Record<string, string> = {
+  // Alwyn Team
+  "Troskie Posthumus": "rl_alwyn", "Alouette Havenga": "rl_alwyn", "Antonio Max-lino": "rl_alwyn",
+  "Magdalena Van Der Lely": "rl_alwyn", "Marcelle Kunneke": "rl_alwyn", "Moipone Khoele": "rl_alwyn",
+  "Nicole Zwaneopel": "rl_alwyn",
+  // Daniel Team
+  "Lerato Chauke": "rl_daniel", "Lorne Adams": "rl_daniel", "Tamarin Otto": "rl_daniel",
+  "Vanessa Ferreira": "rl_daniel", "Nthabiseng Mashego": "rl_daniel", "Ruan Smith": "rl_daniel",
+  "Vicky Ngomane": "rl_daniel", "Gustav Lind": "rl_daniel", "Juan-Pere Duvenhage": "rl_daniel", "Riaan Mare": "rl_daniel",
+  // Genen Team
+  "Ashlyne-Kay Caveney": "rl_genen", "Gladys Claassen": "rl_genen", "Jade Taff": "rl_genen",
+  "Jared Hockaday": "rl_genen", "Kim Hing": "rl_genen", "Rochelle Kapp": "rl_genen",
+  "Shayna Bentley": "rl_genen", "Luniko Fitshane": "rl_genen", "Lorraine Slabbert": "rl_genen",
+  "Cindy Ann Burke": "rl_genen", "Craig La Vita": "rl_genen",
+  // Jason Team
+  "Arabella de Meillon": "rl_jason", "Brandon Spandiel": "rl_jason", "Chantal Fisher": "rl_jason",
+  "Desiree Schwegmann": "rl_jason", "Enrico De Giovanni": "rl_jason", "Moeketsi Mogapi": "rl_jason",
+  "Nicole Roopen": "rl_jason", "Noelene Mthiyane": "rl_jason", "Raigaanah Sarmie": "rl_jason",
+  "Rose Nhlapo": "rl_jason", "Saddica Berriche": "rl_jason", "Siyabulela Mtatase": "rl_jason", "Thandile Nqwakuzayo": "rl_jason",
+  // Sherezaad Team
+  "Charles Wagner": "rl_sherezaad", "Corne Reichert": "rl_sherezaad", "Madiphoko Moholo": "rl_sherezaad",
+  "Andisiwe Lapi": "rl_sherezaad", "Corne Gunther": "rl_sherezaad", "Darius Bronkhorst": "rl_sherezaad",
+  "Henrico Bekker": "rl_sherezaad", "Henriette Harrison": "rl_sherezaad", "Juanita Calitz": "rl_sherezaad",
+  "Nina Iwuoha": "rl_sherezaad", "Sherazade Hatia": "rl_sherezaad", "Imogen Katsky": "rl_sherezaad", "Nadia Fivaz": "rl_sherezaad",
+  // Tamzin Team
+  "Celia Francis": "rl_tamzin", "Kerusha Bechoo": "rl_tamzin", "Keshnee Pillay": "rl_tamzin",
+  "Menziwezinto Mchunu": "rl_tamzin", "Shivani Tulsia": "rl_tamzin", "Shiveer Ramjith": "rl_tamzin",
+  "Subhaan Abdulla": "rl_tamzin", "Valencia Pillay": "rl_tamzin", "Vumokwakhe Gazu": "rl_tamzin",
+  "Yashik Rambally": "rl_tamzin", "Johan van Schalkwyk": "rl_tamzin", "Mandisa Mfeka": "rl_tamzin",
+  // Thiloshini Team
+  "Chante Labuschagne": "rl_thiloshini", "Craig Mallandain": "rl_thiloshini", "Desigan Veeran": "rl_thiloshini",
+  "Jade Holl": "rl_thiloshini", "Jeremy Beeby": "rl_thiloshini", "Josh Munger": "rl_thiloshini",
+  "Kerwin Manuel": "rl_thiloshini", "Luke Naidoo": "rl_thiloshini", "Lungelo Mabena": "rl_thiloshini",
+  "Moegamad Abdussamad": "rl_thiloshini", "Ntokozo Shaun Nhlapo": "rl_thiloshini", "Oratiloe Molefe": "rl_thiloshini",
+  "Regan Jansen": "rl_thiloshini"
+};
 
-const THILOSHINI_TEAM = [
-  "Chante Labuschagne", "Craig Mallandain", "Desigan Veeran", "Jade Holl", 
-  "Jeremy Beeby", "Josh Munger", "Kerwin Manuel", "Luke Naidoo", 
-  "Lungelo Mabena", "Moegamad Abdussamad", "Ntokozo Shaun Nhlapo", 
-  "Oratiloe Molefe", "Regan Jansen", "Zandile Thotanyana"
-];
+const AM_NAMES = Object.keys(TEAM_MAP);
 
 // Generate formal User objects for each AM
 const AM_USERS: User[] = AM_NAMES.map((fullName, index) => {
   const parts = fullName.toLowerCase().split(' ');
-  const surname = parts[parts.length - 1];
-  const id = `am_${parts[0].replace(/[^a-z0-9]/g, '')}_${surname.replace(/[^a-z0-9]/g, '')}`;
-  const email = `${parts[0]}.${surname}@omniticket.com`;
+  const id = `am_${parts[0].replace(/[^a-z0-9]/g, '')}_${index}`;
+  const email = `${parts[0]}@omniticket.com`;
   
-  let managerId = undefined;
-  if (JASON_TEAM.includes(fullName)) managerId = JASON_ID;
-  else if (THILOSHINI_TEAM.includes(fullName)) managerId = THILOSHINI_ID;
-
   return {
     id,
     username: fullName,
     role: 'AM',
     email,
     isOoO: false,
-    managerId,
-    workload: Math.floor(Math.random() * 5),
+    managerId: TEAM_MAP[fullName],
+    workload: Math.floor(Math.random() * 8),
   };
 });
 
-// Assign circular backups
-AM_USERS.forEach((am, index) => {
-  const backupIndex = (index + 1) % AM_USERS.length;
-  am.backupAMId = AM_USERS[backupIndex].id;
-});
+// National & Director users
+const EXECUTIVE_USERS: User[] = [
+  { id: 'nat_1', username: 'National AM Hub', role: 'National', email: 'national.hub@omniticket.com' },
+  { id: 'dir_1', username: 'Executive Director', role: 'Director', email: 'director@omniticket.com' }
+];
+
+// Regional Lead users
+const REGIONAL_USERS: User[] = REGIONAL_LEADERS.map(rl => ({
+  id: rl.id,
+  username: rl.name,
+  role: 'Regional',
+  email: `${rl.name.toLowerCase().replace(' ', '.')}@omniticket.com`
+}));
 
 const SYSTEM_USERS: User[] = [
   { 
@@ -74,163 +91,56 @@ const SYSTEM_USERS: User[] = [
     company: 'Acme Corp', 
     email: 'john@acme.com',
     assignedAMId: AM_USERS.find(am => am.username === 'Arabella de Meillon')?.id
-  },
-  { 
-    id: 'u2', 
-    username: 'JaneSmith', 
-    role: 'Client', 
-    company: 'Stark Ind', 
-    email: 'jane@stark.com',
-    assignedAMId: AM_USERS.find(am => am.username === 'Chante Labuschagne')?.id
-  },
-  { id: JASON_ID, username: 'Jason Witbooi', role: 'Manager', email: 'jason.witbooi@omniticket.com' },
-  { id: THILOSHINI_ID, username: 'Thiloshini Naidoo', role: 'Manager', email: 'thiloshini.naidoo@omniticket.com' },
-  { id: 'm1', username: 'System Admin', role: 'Manager', email: 'admin@omniticket.com' },
+  }
 ];
 
-export const USERS: User[] = [...SYSTEM_USERS, ...AM_USERS];
+export const USERS: User[] = [...SYSTEM_USERS, ...AM_USERS, ...REGIONAL_USERS, ...EXECUTIVE_USERS];
 
 export const INITIAL_TICKETS: Ticket[] = [
   {
     id: 'JohnDoe_Newfitment_001',
     month: 'October',
-    dateSent: new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString(), 
+    dateSent: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(), 
     username: 'JohnDoe',
     company: 'Acme Corp',
     contactEmail: 'john@acme.com',
-    registration: 'REG-12345',
-    regEngine: 'V8-Cloud',
+    registration: 'REG-123',
+    regEngine: 'V8',
     type: 'New fitment',
     stage: 'Awaiting Capture',
-    scheduleDate: '2023-10-25',
+    scheduleDate: '2023-11-01',
     assignedAMId: AM_USERS.find(am => am.username === 'Arabella de Meillon')?.id || AM_USERS[0].id,
-    tcDocUrl: 'https://cdn.cartrack.com/forms/Commercial_Client_Add_Vehicle_Form_2024.pdf',
-    lastUpdated: new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'JaneSmith_Repair_001',
-    month: 'October',
-    dateSent: new Date().toISOString(),
-    username: 'JaneSmith',
-    company: 'Stark Ind',
-    contactEmail: 'jane@stark.com',
-    registration: 'REG-555',
-    regEngine: 'V8-Legacy',
-    type: 'Repair',
-    stage: 'Testing',
-    scheduleDate: '2023-10-26',
-    assignedAMId: AM_USERS.find(am => am.username === 'Chante Labuschagne')?.id || AM_USERS[1].id,
-    tcDocUrl: 'https://cdn.cartrack.com/forms/Standard_TandC_SA_2025.pdf',
-    lastUpdated: new Date().toISOString(),
+    tcDocUrl: '#',
+    lastUpdated: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
   }
 ];
 
-export const TICKET_TYPES: string[] = [
-  'New fitment',
-  'De/Re',
-  'Repair',
-  'Hardlock',
-  'Change of Ownership (COO)',
-  'Option Change',
-  'Cancellation'
+export const TICKET_TYPES: TicketType[] = [
+  'New fitment', 'De/Re', 'Repair', 'Hardlock', 'Change of Ownership (COO)', 'Option Change', 'Cancellation'
 ];
 
 export const FORM_MAPPINGS: Record<TicketType, { name: string, url: string }> = {
-  'New fitment': { 
-    name: 'Commercial Client Add Vehicle Form.pdf', 
-    url: 'https://cdn.cartrack.com/forms/Commercial_Client_Add_Vehicle_Form_2024.pdf' 
-  },
-  'De/Re': { 
-    name: 'Deinstallation_Reinstallation_Form.pdf', 
-    url: 'https://cdn.cartrack.com/forms/Deinstallation_Reinstallation_Form_2020.pdf' 
-  },
-  'Change of Ownership (COO)': { 
-    name: 'Change_of_Ownership_Form.pdf', 
-    url: 'https://cdn.cartrack.com/forms/Change_of_Ownership_Form_2024.pdf' 
-  },
-  'Cancellation': { 
-    name: 'Commercial_Cancellation_Form.pdf', 
-    url: 'https://cdn.cartrack.com/forms/Commercial_Cancellation_Form_2023.pdf' 
-  },
-  'Repair': { 
-    name: 'Standard_Terms_and_Conditions_SA.pdf', 
-    url: 'https://cdn.cartrack.com/forms/Standard_TandC_SA_2025.pdf' 
-  },
-  'Hardlock': { 
-    name: 'Standard_Terms_and_Conditions_SA.pdf', 
-    url: 'https://cdn.cartrack.com/forms/Standard_TandC_SA_2025.pdf' 
-  },
-  'Option Change': { 
-    name: 'Standard_Terms_and_Conditions_SA.pdf', 
-    url: 'https://cdn.cartrack.com/forms/Standard_TandC_SA_2025.pdf' 
-  }
+  'New fitment': { name: 'Add_Vehicle_Form.pdf', url: '#' },
+  'De/Re': { name: 'Deinstallation_Form.pdf', url: '#' },
+  'Change of Ownership (COO)': { name: 'COO_Form.pdf', url: '#' },
+  'Cancellation': { name: 'Cancellation_Form.pdf', url: '#' },
+  'Repair': { name: 'T&C_SA.pdf', url: '#' },
+  'Hardlock': { name: 'T&C_SA.pdf', url: '#' },
+  'Option Change': { name: 'T&C_SA.pdf', url: '#' }
 };
 
 export const STAGES: TicketStage[] = [
-  'Awaiting Capture',
-  'Sent to Capturing',
-  'Testing',
-  'Awaiting Scheduling',
-  'Client Hold',
-  'Partial Complete',
-  'Company Hold',
-  'Completed'
+  'Awaiting Capture', 'Sent to Capturing', 'Testing', 'Awaiting Scheduling', 
+  'Client Hold', 'Partial Complete', 'Company Hold', 'Completed'
 ];
 
-export interface StageDetail {
-  header: string;
-  description: string;
-  nextAction: string;
-  colorClass: string;
-}
-
-export const STAGE_CONFIG: Record<TicketStage, StageDetail> = {
-  'Awaiting Capture': {
-    header: 'Logged & Pending',
-    description: 'Ticket created by client; awaiting capture team.',
-    nextAction: 'Move to capturing team for processing.',
-    colorClass: 'bg-slate-100 text-slate-700'
-  },
-  'Sent to Capturing': {
-    header: 'In Capturing',
-    description: 'Data is being actively captured/entered.',
-    nextAction: 'Confirm data integrity and move to Testing or Complete.',
-    colorClass: 'bg-blue-50 text-blue-700 border-blue-100'
-  },
-  'Testing': {
-    header: 'Testing (Repairs Only)',
-    description: 'Phase designated for testing repair efficacy.',
-    nextAction: 'Verify results; move to Scheduling if repair failed.',
-    colorClass: 'bg-indigo-50 text-indigo-700 border-indigo-100'
-  },
-  'Awaiting Scheduling': {
-    header: 'Repair Scheduling',
-    description: 'Captures/testing failed; repair is mandatory.',
-    nextAction: 'Coordinate with field team to schedule repair date.',
-    colorClass: 'bg-rose-50 text-rose-700 border-rose-100'
-  },
-  'Client Hold': {
-    header: 'On Hold (Client)',
-    description: 'Work paused by client request.',
-    nextAction: 'Regular follow-up with client until work resumes.',
-    colorClass: 'bg-amber-50 text-amber-700 border-amber-100'
-  },
-  'Partial Complete': {
-    header: 'Partial (De/Re)',
-    description: 'De-installation is complete; Re-installation pending.',
-    nextAction: 'Monitor and schedule second phase (Re-install).',
-    colorClass: 'bg-cyan-50 text-cyan-700 border-cyan-100'
-  },
-  'Company Hold': {
-    header: 'On Hold (Internal)',
-    description: 'Work paused due to internal issue/escalation.',
-    nextAction: 'Resolve internal blocker or consult Manager.',
-    colorClass: 'bg-orange-50 text-orange-700 border-orange-100'
-  },
-  'Completed': {
-    header: 'Finalized',
-    description: 'All work finished and records updated.',
-    nextAction: 'No further action required.',
-    colorClass: 'bg-emerald-50 text-emerald-700 border-emerald-100'
-  }
+export const STAGE_CONFIG: Record<TicketStage, { header: string; description: string; nextAction: string; colorClass: string; }> = {
+  'Awaiting Capture': { header: 'Logged', description: 'Pending capture.', nextAction: 'Move to capturing.', colorClass: 'bg-slate-100 text-slate-700' },
+  'Sent to Capturing': { header: 'In Process', description: 'Data entry phase.', nextAction: 'Verify data.', colorClass: 'bg-blue-50 text-blue-700 border-blue-100' },
+  'Testing': { header: 'Testing', description: 'Verifying repair.', nextAction: 'Confirm fix.', colorClass: 'bg-indigo-50 text-indigo-700 border-indigo-100' },
+  'Awaiting Scheduling': { header: 'Scheduling', description: 'Booking technician.', nextAction: 'Call client.', colorClass: 'bg-rose-50 text-rose-700 border-rose-100' },
+  'Client Hold': { header: 'Client Hold', description: 'Waiting for client.', nextAction: 'Follow up.', colorClass: 'bg-amber-50 text-amber-700 border-amber-100' },
+  'Partial Complete': { header: 'Partial', description: 'Phase 1 done.', nextAction: 'Schedule Phase 2.', colorClass: 'bg-cyan-50 text-cyan-700 border-cyan-100' },
+  'Company Hold': { header: 'Internal Hold', description: 'Internal blocker.', nextAction: 'Escalate.', colorClass: 'bg-orange-50 text-orange-700 border-orange-100' },
+  'Completed': { header: 'Finalized', description: 'Closed.', nextAction: 'None.', colorClass: 'bg-emerald-50 text-emerald-700 border-emerald-100' }
 };
